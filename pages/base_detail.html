@@ -11,14 +11,10 @@
 	</head>
 	<body>
 	<!--活动详情页  -->
-	<div class="ad_box">
-		<h2 class="ad_title ad_clip">美大选二辩演“动物凶猛”特朗普：当选让你坐牢 希拉里：你没资格当选</h2>
-		<p class="ad_navTetail">
-			<span class="ad_nav01">分类：其他</span>
-			<span class="ad_nav02">组织：XXXX</span>
-		</p>
+	<div class="ad_box" id="ad_box">
+		<div id="ad_detail_title"></div>
 		<div class="ad_container">
-			<div class="ad_con_left">
+			<div class="ad_con_left" id="ad_con_left">
 				<p align="center" class="ad_leftImg">
 					<img src="../images/activeVolunteer/headimg02.jpg">
 				</p>
@@ -34,8 +30,8 @@
 							<a href="javascript:void(0)">留言咨询</a>
 						</li>
 					</ul>
-					<ul class="ad_conUl">
-						<li class="ad_baseCon">
+					<ul class="ad_conUl" id="ad_conUl">
+						<!--<li class="ad_baseCon">
 							<table>
 								<tbody>
 									<tr>
@@ -74,7 +70,7 @@
 						</li>
 						<li class="ad_messageCon">
 							留言咨询
-						</li>
+						</li>-->
 					</ul>
 				</div>
 					
@@ -143,3 +139,147 @@
 	<!--活动详情页结束-->
 	</body>
 </html>
+<script>
+$(function(){
+	base_detial();
+})
+var view={
+		all:"抢险救灾,生态建设,文化建设,大型活动,西部开发,网络文明,社区服务,海外服务,社会管理,扶贫济困,助老助残,其他",
+		wenhua:"生态建设,文化建设",
+		tiyu:"大型活动",
+		jiaoyu:"西部开发,网络文明",
+		shequ:"社区服务,海外服务,社会管理",
+		shehuifuwu:"扶贫济困,助老助残,其他",
+		weishengyiliao:"抢险救灾"
+	}	
+function GetJsonData(view_type) {
+			serviceFieldString="";
+			switch (view_type){
+				case "wenhua":	serviceFieldString=view.wenhua;break;
+				case "tiyu":	serviceFieldString=view.tiyu;break;
+				case "jiaoyu":	serviceFieldString=view.jiaoyu; break;
+				case "shequ":	serviceFieldString=view.shequ; break;
+				case "shehuifuwu":	serviceFieldString=view.shehuifuwu; break;
+				case "weishengyiliao":	serviceFieldString=view.weishengyiliao; break;
+				default :serviceFieldString=view.all; break;
+			}
+			var json = {
+				serviceFieldString:serviceFieldString
+			};
+			return json;
+	}
+	function base_detial(view_type){
+		var hashes = window.location.href;
+		var base_start_local=hashes.indexOf("?");
+		var base_end_local=hashes.indexOf("&");
+		var base_id=hashes.substring(base_start_local+1).split("&");
+		var id=(base_id[0].split("="))[1];
+		var i=(base_id[1].split("="))[1];
+		$.ajax({
+			type:"post",
+				url:"http://test.dakaqi.cn:3030/approve/address/queryAddressList",
+				datatype:"json",
+				async:true,
+				contentType: 'application/json; charset=utf-8',
+				data:JSON.stringify(GetJsonData(view_type)),
+				error:function(datas){
+					alert('加载失败');
+				},
+				success:function(datas){
+					var base_detail_list=datas.data;
+					if(base_detail_list[i].id==id){
+						//标题
+						var base_detail_title="";
+						base_detail_title+="<h2 class='ad_title ad_clip'>"+base_detail_list[i].name+"</h2>"+
+						"<p class='ad_navTetail'>"+
+							"<span class='ad_nav01'>分类：其他</span>"+
+							"<span class='ad_nav02'>组织："+base_detail_list[i].createTime+"</span>"+
+						"</p>"
+						//标题结束
+						//标签内容
+						var ad_conUl="";
+						ad_conUl+="<li class='ad_baseCon'>"+
+							"<table>"+
+								"<tbody>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>通讯地址：</td>"+
+										"<td class='ad_tdRStyle01'>"+base_detail_list[i].address+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>可容纳人所：</td>"+
+										"<td class='ad_tdRStyle01'>"+base_detail_list[i].dayPersions+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>传真：</td>"+
+										"<td  class='ad_tdRStyle02'>"+base_detail_list[i].fax+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>是否有专职工作人员：</td>"+
+										"<td  class='ad_tdRStyle02'>"+base_detail_list[i].hasFulltimePersion+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>是否有后勤保障：</td>"+
+										"<td  class='ad_tdRStyle02'>"+base_detail_list[i].hasLogistics+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>是否有管理制度：</td>"+
+										"<td  class='ad_tdRStyle02'>"+base_detail_list[i].hasManagerRegime+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>是否有培训交流场地：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].hasTrainAdress+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>是否有培训计划：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].hasTrainPlan+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>岗位数：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].jobs+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>基地负责人：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].montorName+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>基地负责人手机：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].montorPhone+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>邮编：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].postCode+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>单位基本情况及主要公益项目特色：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].projectDemo+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>主要公益项目：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].projectName+"</td>"+
+									"</tr>"+
+								"</tbody>"+
+							"</table>"+
+						"</li>"+
+						"<li class='ad_projectCon' style='display:none;'>"+
+							"<table>"+
+								"<tbody>"+
+									"<tr>"+
+										"<td class='ad_tdLeft'>每年公益项目总数：</td>"+
+										"<td  class='ad_tdRStyle01'>"+base_detail_list[i].yearProjects+"</td>"+
+									"</tr>"+
+								"</tbody>"+
+							"</table>"+
+						"</li>"+
+						"<li class='ad_messageCon' style='display:none;'>"+
+							"留言咨询"+
+						"</li>"
+						//标签内容结束
+						
+					}
+					$("#ad_detail_title").html(base_detail_title);
+					$("#ad_conUl").html(ad_conUl);
+				}
+		})
+
+	}
+</script>

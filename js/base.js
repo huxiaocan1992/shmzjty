@@ -27,14 +27,14 @@ $(function() {
 	Num_Handle("#center_num_02");
 	Num_Handle("#center_num_03");
 	//海报轮播
-	swiper();
+//	swiper();
 
 	
 })
 
 //数字处理
 function Num_Handle(NumValue) {
-	var numValue = $(NumValue).html().split('');
+	var numValue = $(NumValue).text().split('');
 	var text_html = "<ul style='display:table;margin:0 auto;overflow:hidden;'>";
 	for(var i = 0; i < numValue.length; i++) {
 		text_html += "<li style='background:#fff;color: #5e96c9;font-size:24px;float:left;width:30px;height:38px;line-height:38px;text-align: center;	margin-left:1px;'>" + numValue[i] + "</li>"
@@ -57,11 +57,11 @@ function tabChange(tag, tagCon, currentClass) { //tag 用于切换的标签，ta
 		$(tag).eq(n).show();
 	})
 }
-function swiper() {
-		var swiper = new Swiper('.banner', {
-			loop: true,
-			pagination: '.banner_icon',
-			paginationClickable: true,
-			autoplay: 5000
-		})
-	}
+//function swiper() {
+//		var swiper = new Swiper('.banner', {
+//			loop: true,
+//			pagination: '.banner_icon',
+//			paginationClickable: true,
+//			autoplay: 5000
+//		})
+//	}

@@ -48,13 +48,14 @@
 		<div class="list_container_box">
 			<div class="list_condition">
 				<ul class="list_condition_detail">
-					<li><a class="list_active" href="#">全部</a></li>
-					<li><a href="#" name="wenhua">文化</a></li>
-					<li><a href="#" name="tiyu">体育</a></li>
-					<li><a href="#" name="jiaoyu">教育</a></li>
-					<li><a href="#" name="shequ">社区</a></li>
-					<li><a href="#" name="shehuifuwu">社会服务</a></li>
-					<li><a href="#" name="weishengyiliao">卫生医疗</a></li>
+					<li><a class="list_active"  onclick="ajaxList('')" href="#">全部</a>
+					</li>
+					<li><a href="#" onclick="ajaxList('wenhua')" name="wenhua">文化</a></li>
+					<li><a href="#" onclick="ajaxList('tiyu')" name="tiyu">体育</a></li>
+					<li><a href="#" onclick="ajaxList('jiaoyu')" name="jiaoyu">教育</a></li>
+					<li><a href="#" onclick="ajaxList('shequ')" name="shequ">社区</a></li>
+					<li><a href="#" onclick="ajaxList('shehuifuwu')" name="shehuifuwu">社会服务</a></li>
+					<li><a href="#" onclick="ajaxList('weishengyiliao')" name="weishengyiliao">卫生医疗</a></li>
 				</ul>
 			</div>
 			<div class="list_container">
@@ -85,41 +86,6 @@
 				<!--搜索列表结束-->
 				<!--列表详细-->
 				<ul class="list_detail" id="list_detail">
-					<li class="list_detail_li">
-						<a class="list_img">
-							<img src="../images/tuijian01.png"/>
-						</a>
-						<dl class="list_detail_content">
-								<dt><a class="list_detail_title clip" href="#">顺德区百场文化公益培训进基层--古楼幼儿园新媒体讲座 </a></dt>
-								<dd class="list_address clip">地址：大良古楼幼儿园</dd>
-								<dd class="list_area clip">所属区域： 上海市静安区淮安路668号</dd>
-								<dd>
-									<div class="list_detail_progress">
-										<span class="ldp_baoming">报名截止:</span>
-										<p><span class="ldp_jdt" style="width: 20%;"></span></p>
-										<span class="ldp_syts">剩<em>132</em>天</span>
-									</div>
-								</dd>
-						</dl>
-						<a class="list_handle">我要报名</a>
-						<ul class="list_operation">
-							<li class="list_operation_li">
-								<i class="list_operation_01"></i>
-								<em>感兴趣</em>
-								<strong>2</strong>
-							</li>
-							<li class="list_operation_li">
-								<i class="list_operation_02"></i>
-								<em>招募人数</em>
-								<strong>20</strong>
-							</li>
-							<li class="list_operation_li">
-								<i class="list_operation_03"></i>
-								<em>关注</em>
-								<strong>200</strong>
-							</li>
-						</ul>
-					</li>
 					
 				</ul>
 				
@@ -144,6 +110,7 @@
 				</div>
 			</div>
 		<!--底部-->
+		<input id="view_type" type="hidden" name="all" value="all">
 	</body>
 	
 </html>
@@ -151,27 +118,60 @@
 <link rel="stylesheet" href="../laypage-v1.3/laypage/skin/laypage.css"/><!--分页的css-->
 <script src="../laypage-v1.3/laypage/laypage.js"></script><!--分页的js-->
 <script>
-	function GetJsonData() {
-		var nameLike="";
-		var nameLike=$("#search_box").val();
+	$(function(){
+	 	ajaxList('all');
+	 	$(".list_condition_detail li a").click(function(e){
+			$(".list_condition_detail li a").removeClass("list_active");
+			$(this).addClass("list_active");
+		})
+	 })
+	/*分类处理*/
+	var view={
+		all:"抢险救灾,生态建设,文化建设,大型活动,西部开发,网络文明,社区服务,海外服务,社会管理,扶贫济困,助老助残,其他",
+		wenhua:"生态建设,文化建设",
+		tiyu:"大型活动",
+		jiaoyu:"西部开发,网络文明",
+		shequ:"社区服务,海外服务,社会管理",
+		shehuifuwu:"扶贫济困,助老助残,其他",
+		weishengyiliao:"抢险救灾"
+	}	
+	/*分类处理结束*/
+	function GetJsonData(view_type) {
+		var nameLike="",
+			pageNo=1,
+			name="",
+			area="",
+			serviceFieldString="";
+			switch (view_type){
+				case "wenhua":	serviceFieldString=view.wenhua;break;
+				case "tiyu":	serviceFieldString=view.tiyu;break;
+				case "jiaoyu":	serviceFieldString=view.jiaoyu; break;
+				case "shequ":	serviceFieldString=view.shequ; break;
+				case "shehuifuwu":	serviceFieldString=view.shehuifuwu; break;
+				case "weishengyiliao":	serviceFieldString=view.weishengyiliao; break;
+				default :serviceFieldString=view.all; break;
+			}
+			nameLike=$("#search_box").val();
 			var json = {
-				nameLike:nameLike
+				nameLike:nameLike,
+				serviceFieldString:serviceFieldString
 			};
 			return json;
 		}
-	function ajaxList(){
+	function ajaxList(view_type){
 		$.ajax({
 				type:"post",
-				url:"http://test.dakaqi.cn:3030/approve/address/queryAddressList?",
+				url:"http://test.dakaqi.cn:3030/approve/address/queryAddressList",
 				datatype:"json",
+				async:true,
 				contentType: 'application/json; charset=utf-8',
-				data:JSON.stringify(GetJsonData()),
+				data:JSON.stringify(GetJsonData(view_type)),
 				error:function(datas){
 					alert('加载失败');
 				},
 				success:function(datas){
 					var base_list=datas.data;
-						var nums =1; //每页出现的数量
+						var nums =5; //每页出现的数量
 					var pages = Math.ceil(base_list.length/nums); //得到总页数
 					
 					var thisDate = function(curr){
@@ -180,20 +180,20 @@
 					    last = last >= base_list.length ? (base_list.length-1) : last;
 						for(var i=(curr*nums - nums);i<=last;i++){
 							html_list+="<li class='list_detail_li'>"+
-							"<a class='list_img'>"+
+							"<a class='list_img' href='#'>"+
 								"<img src='../images/tuijian01.png'/>"+
-							"</a>"	+
+							"</a>"+
 							"<dl class='list_detail_content'>"+
-									"<dt><a class='list_detail_title clip' href='#'>"+base_list[i].name+"</a></dt>"+
+									"<dt><a class='list_detail_title clip' target='_blank' href='base_detail.html?id="+base_list[i].id+"&i="+i+"' onclick='ajaxList()'>"+base_list[i].name+"</a></dt>"+
 									"<dd class='list_address clip'>地址："+base_list[i].address+"</dd>"+
-									"<dd class='list_area clip'>所属区域： 上海市静安区淮安路668号</dd>"+
-									"<dd>"+
-										"<div class='list_detail_progress'>"+
-											"<span class='ldp_baoming'>报名截止:</span>"+
-											"<p><span class='ldp_jdt' style='width: 20%;'></span></p>"+
-											"<span class='ldp_syts'>剩<em>132</em>天</span>"+
-										"</div>"+
-									"</dd>"+
+									"<dd class='list_area clip'>联系电话："+base_list[i].contactPhone+" </dd>"+
+//									"<dd>"+
+//										"<div class='list_detail_progress'>"+
+//											"<span class='ldp_baoming'>报名截止:</span>"+
+//											"<p><span class='ldp_jdt' style='width: 20%;'></span></p>"+
+//											"<span class='ldp_syts'>剩<em>132</em>天</span>"+
+//										"</div>"+
+//									"</dd>"+
 							"</dl>"+
 							"<a class='list_handle'>联系基地</a>"+
 							"<ul class='list_operation'>"+
@@ -223,6 +223,8 @@
 					    pages: pages,
 					    skin:'#1E9FFF',
 					    skip: true,
+					    first:'首页',
+					    last:'尾页',
 					    jump: function(obj,first){
 					        document.getElementById('list_detail').innerHTML = thisDate(obj.curr );
 					    }
@@ -230,9 +232,5 @@
 				}
 			})
 	}
-	
-	ajaxList();
-
-
-
+	 
 </script>
